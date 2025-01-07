@@ -134,26 +134,27 @@ while running:
 			if event.key == pygame.K_ESCAPE or \
 				event.key == pygame.K_q:
 				running = False
-		if event.type == pygame.MOUSEBUTTONDOWN:
-			if start_screen:
-				game_started = True
-				speed = 2
-				start_screen = False
+			#for start game or restart game
+			elif event.key == pygame.K_SPACE:
+				if start_screen:
+					game_started = True
+					speed = 2
+					start_screen = False
 
-				game_over = False
-			#	grumpy.reset()
-				last_pipe = pygame.time.get_ticks() - pipe_frequency
-				next_pipe = 0
-				pipe_group.empty()
-				
-				speed = 2
-				score = 0
-				
-			if game_over:
-				start_screen = True
-				grumpy = Grumpy(win)
-				pipe_img = random.choice(im_list)
-				bg = random.choice([bg1, bg2])
+					game_over = False
+				#	grumpy.reset()
+					last_pipe = pygame.time.get_ticks() - pipe_frequency
+					next_pipe = 0
+					pipe_group.empty()
+					
+					speed = 2
+					score = 0
+					
+				if game_over:
+					start_screen = True
+					grumpy = Grumpy(win)
+					pipe_img = random.choice(im_list)
+					bg = random.choice([bg1, bg2])
 				
 			
 

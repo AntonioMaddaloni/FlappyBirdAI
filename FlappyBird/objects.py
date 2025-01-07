@@ -30,11 +30,11 @@ class Grumpy:
 		if self.alive:
 			
 			# jump
-			if pygame.mouse.get_pressed()[0] == 1 and not self.jumped:
+			if pygame.key.get_pressed()[pygame.K_SPACE] == 1 and not self.jumped:
 				wing_fx.play()
 				self.jumped = True
 				self.vel = -6
-			if pygame.mouse.get_pressed()[0] == 0:
+			if pygame.key.get_pressed()[pygame.K_SPACE] == 0:
 				self.jumped = False
 			
 			self.flap_counter()
