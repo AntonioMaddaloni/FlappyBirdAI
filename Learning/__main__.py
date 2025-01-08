@@ -9,7 +9,7 @@ env = gym.make('FlappyBird-v0')
 
 # Configura e addestra il modello PPO
 model = PPO("MlpPolicy", env, verbose=1)
-model.learn(total_timesteps=10000)
+model.learn(total_timesteps=1000)
 
 # Salva il modello
 model.save("./Models/ppo_flappybird")
