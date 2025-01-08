@@ -147,5 +147,24 @@ class FlappyBirdEnv(gymnasium.Env):
         self.clock.tick(self.FPS)
         pygame.display.update()
 
+    def reset(self):
+        # Backgrounds
+        self.bg = random.choice([self.bg1, self.bg2])
+        self.pipe_img = random.choice(self.im_list)
+        # Objects
+        self.pipe_group = pygame.sprite.Group()
+        self.base = Base(self.win)
+        self.score_img = Score(self.WIDTH // 2, 50, self.win)
+        self.grumpy = Grumpy(self.win)
+        # Variables
+        self.base_height = 0.80 * self.HEIGHT
+        self.speed = 0
+        self.game_started = False
+        self.game_over = False
+        self.score = 0
+        self.start_screen = True
+        self.pipe_pass = False
+        self.pipe_frequency = 1600
+
     def close(self):
         pygame.quit()
