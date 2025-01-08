@@ -78,6 +78,8 @@ class FlappyBirdEnv(gym.Env):
     def step(self, action):
         self.win.blit(self.bg, (0,0))
         
+        reward=0
+
         if self.start_screen:
             self.speed = 0
             self.grumpy.draw_flap()
@@ -127,6 +129,7 @@ class FlappyBirdEnv(gym.Env):
                         self.pipe_pass = False
                         self.score += 1
                         self.point_fx.play()
+                        reward = 1
                         
         if not self.grumpy.alive:
             self.win.blit(self.gameover_img, (50,200))
@@ -154,13 +157,19 @@ class FlappyBirdEnv(gym.Env):
                 self.bg = random.choice([self.bg1, self.bg2])
             
         # Definizione della ricompensa
-        reward = 1 if not self.game_over else -100
+        if self.game_over:
+            reward = -10
+
         
         # Stato di osservazione
         obs = np.array([
             self.grumpy.rect.x,
             self.grumpy.rect.y,
-            self.grumpy.vel
+            self.grumpy.vel,
+            self.top.rect.x,     # Posizione orizzontale del tubo superiore
+            self.top.rect.y,     # Posizione verticale del tubo superiore
+            self.bottom.rect.y ,  # Posizione verticale del tubo inferiore
+            self.bottom.rect.x
         ], dtype=np.float32)
         
         # Stato del gioco
@@ -169,13 +178,22 @@ class FlappyBirdEnv(gym.Env):
         #Info Ulteriori
         info = {}
         
-        return obs, reward, done, info
+        # Valore aggiuntivo richiesto per Gymnasium
+        truncated = False
+        
+        
+        return obs, reward, done, truncated, info
 
     def render(self):
         self.clock.tick(self.FPS)
         pygame.display.update()
 
-    def reset(self):
+    def reset(self, seed=None, options=None):
+        # Imposta il seme per la riproducibilità
+        if seed is not None:
+            self.np_random, seed = gym.utils.seeding.np_random(seed)
+            random.seed(seed)
+            np.random.seed(seed)
         # Backgrounds
         self.bg = random.choice([self.bg1, self.bg2])
         self.pipe_img = random.choice(self.im_list)
@@ -193,7 +211,13 @@ class FlappyBirdEnv(gym.Env):
         self.start_screen = True
         self.pipe_pass = False
         self.pipe_frequency = 1600
-        return np.array([self.grumpy.rect.x, self.grumpy.rect.y, self.grumpy.vel], dtype=np.float32)
+        observation =  np.array([self.grumpy.rect.x, self.grumpy.rect.y, self.grumpy.vel], dtype=np.float32)
+    
+        # Controlla se il chiamante si aspetta una tupla o solo l'osservazione
+        if "stable_baselines3" in str(self.__class__):
+            return observation
+        
+        return observation, {}
 
     def close(self):
         pygame.quit()
