@@ -20,6 +20,7 @@ while not done:
     
     # Renderizza l'ambiente
     env.render()
+    print(obs)
 
 # Chiudi l'ambiente
 env.close()

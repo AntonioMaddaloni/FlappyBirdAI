@@ -9,12 +9,6 @@ class FlappyBirdEnv(gym.Env):
     def __init__(self):
         # For Gymnasium Compatibility
         super(FlappyBirdEnv, self).__init__()
-        # Dimensioni dell'osservazione (ad esempio, posizione, velocità, ecc.)
-        self.observation_space = spaces.Box(
-            low=np.array([0, 0, -10]),  # Limiti inferiori
-            high=np.array([0, 0, 10]),  # Limiti superiori
-            dtype=np.float32
-        )
         # Spazio delle azioni: 0 = niente, 1 = flap
         self.action_space = spaces.Discrete(2)
         # Setup del gioco
@@ -73,7 +67,14 @@ class FlappyBirdEnv(gym.Env):
         self.score = 0
         self.start_screen = True
         self.pipe_pass = False
-        self.pipe_frequency = 1600        
+        self.pipe_frequency = 1600 
+
+        # Dimensioni dell'osservazione (ad esempio, posizione, velocità, ecc.)
+        self.observation_space = spaces.Box(
+             low=np.array([0, -10, 0, 0, 0, 0]),  # Limiti inferiori
+             high=np.array([self.HEIGHT, 10, self.WIDTH, self.HEIGHT, self.HEIGHT, self.HEIGHT]),  # Limiti superiori
+            dtype=np.float32
+        )      
 
     def step(self, action):
         self.win.blit(self.bg, (0,0))
@@ -118,6 +119,10 @@ class FlappyBirdEnv(gym.Env):
             if self.grumpy.rect.bottom >= self.display_height:
                 self.speed = 0
                 self.game_over = True
+            
+        # Definizione della ricompensa
+        if self.game_over:
+            reward = -10
         
             if len(self.pipe_group) > 0:
                 self.p = self.pipe_group.sprites()[0]
@@ -140,13 +145,11 @@ class FlappyBirdEnv(gym.Env):
                 self.game_started = True
                 self.speed = 2
                 self.start_screen = False
-
                 self.game_over = False
             #grumpy.reset()
                 self.last_pipe = pygame.time.get_ticks() - self.pipe_frequency
                 self.next_pipe = 0
                 self.pipe_group.empty()
-                
                 self.speed = 2
                 self.score = 0
                 
@@ -155,21 +158,19 @@ class FlappyBirdEnv(gym.Env):
                 self.grumpy = Grumpy(self.win)
                 self.pipe_img = random.choice(self.im_list)
                 self.bg = random.choice([self.bg1, self.bg2])
-            
-        # Definizione della ricompensa
-        if self.game_over:
-            reward = -10
 
         
+        # Calcola variabili aggiuntive
+        next_pipe_x = self.pipe_group.sprites()[0].rect.left if len(self.pipe_group) > 0 else self.WIDTH
+        next_pipe_top = self.pipe_group.sprites()[0].rect.bottom if len(self.pipe_group) > 0 else 0
+        next_pipe_bottom = self.pipe_group.sprites()[1].rect.top if len(self.pipe_group) > 1 else self.HEIGHT
+        pipe_speed = self.speed
+
         # Stato di osservazione
         obs = np.array([
-            self.grumpy.rect.x,
-            self.grumpy.rect.y,
-            self.grumpy.vel,
-            self.top.rect.x,     # Posizione orizzontale del tubo superiore
-            self.top.rect.y,     # Posizione verticale del tubo superiore
-            self.bottom.rect.y ,  # Posizione verticale del tubo inferiore
-            self.bottom.rect.x
+            self.grumpy.rect.y, #POSIZIONE DELL UCCELLINO, X NON SERVE
+            self.grumpy.vel, #VELOCITA CON CUI SALTA
+
         ], dtype=np.float32)
         
         # Stato del gioco
@@ -211,7 +212,22 @@ class FlappyBirdEnv(gym.Env):
         self.start_screen = True
         self.pipe_pass = False
         self.pipe_frequency = 1600
-        observation =  np.array([self.grumpy.rect.x, self.grumpy.rect.y, self.grumpy.vel], dtype=np.float32)
+        # Calcola le variabili aggiuntive per l'osservazione
+        next_pipe_x = self.WIDTH  # Inizialmente il tubo è lontano
+        next_pipe_top = 0         # Altezza iniziale del bordo superiore
+        next_pipe_bottom = self.HEIGHT  # Altezza iniziale del bordo inferiore
+        distance_to_base = self.display_height - self.grumpy.rect.bottom
+
+        # Osservazione iniziale
+        observation = np.array([
+            self.grumpy.rect.x,
+            self.grumpy.rect.y,
+            self.grumpy.vel,
+            next_pipe_x,
+            next_pipe_top,
+            next_pipe_bottom,
+            distance_to_base
+        ], dtype=np.float32)
     
         # Controlla se il chiamante si aspetta una tupla o solo l'osservazione
         if "stable_baselines3" in str(self.__class__):
