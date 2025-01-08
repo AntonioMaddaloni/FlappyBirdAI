@@ -1,12 +1,22 @@
-import gymnasium
+import gymnasium as gym
 from gymnasium import spaces
 import numpy as np
 import pygame
 import random
 from objects import Grumpy, Pipe, Base, Score
 
-class FlappyBirdEnv(gymnasium.Env):
+class FlappyBirdEnv(gym.Env):
     def __init__(self):
+        # For Gymnasium Compatibility
+        super(FlappyBirdEnv, self).__init__()
+        # Dimensioni dell'osservazione (ad esempio, posizione, velocità, ecc.)
+        self.observation_space = spaces.Box(
+            low=np.array([0, 0, -10]),  # Limiti inferiori
+            high=np.array([0, 0, 10]),  # Limiti superiori
+            dtype=np.float32
+        )
+        # Spazio delle azioni: 0 = niente, 1 = flap
+        self.action_space = spaces.Discrete(2)
         # Setup del gioco
         pygame.init()
         self.SCREEN = self.WIDTH, self.HEIGHT = 288, 512
@@ -142,6 +152,24 @@ class FlappyBirdEnv(gymnasium.Env):
                 self.grumpy = Grumpy(self.win)
                 self.pipe_img = random.choice(self.im_list)
                 self.bg = random.choice([self.bg1, self.bg2])
+            
+        # Definizione della ricompensa
+        reward = 1 if not self.game_over else -100
+        
+        # Stato di osservazione
+        obs = np.array([
+            self.grumpy.rect.x,
+            self.grumpy.rect.y,
+            self.grumpy.vel
+        ], dtype=np.float32)
+        
+        # Stato del gioco
+        done = self.game_over
+
+        #Info Ulteriori
+        info = {}
+        
+        return obs, reward, done, info
 
     def render(self):
         self.clock.tick(self.FPS)
@@ -165,6 +193,7 @@ class FlappyBirdEnv(gymnasium.Env):
         self.start_screen = True
         self.pipe_pass = False
         self.pipe_frequency = 1600
+        return np.array([self.grumpy.rect.x, self.grumpy.rect.y, self.grumpy.vel], dtype=np.float32)
 
     def close(self):
         pygame.quit()
