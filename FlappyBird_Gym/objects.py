@@ -5,7 +5,7 @@ SCREEN = WIDTH, HEIGHT = 288, 512
 display_height = 0.80 * HEIGHT
 
 pygame.mixer.init()
-wing_fx = pygame.mixer.Sound('Sounds/wing.wav')
+wing_fx = pygame.mixer.Sound('./FlappyBird_Gym/Sounds/wing.wav')
 
 class Grumpy:
 	def __init__(self, win):
@@ -14,7 +14,7 @@ class Grumpy:
 		self.im_list = []
 		bird_color = random.choice(['red', 'blue', 'yellow'])
 		for i in range(1,4):
-			img =  pygame.image.load(f'Assets/Grumpy/{bird_color}{i}.png')
+			img =  pygame.image.load(f'./FlappyBird_Gym/Assets/Grumpy/{bird_color}{i}.png')
 			self.im_list.append(img)
 		
 		self.reset()
@@ -88,7 +88,7 @@ class Base:
 	def __init__(self, win):
 		self.win = win
 
-		self.image1 = pygame.image.load('Assets/base.png')
+		self.image1 = pygame.image.load('./FlappyBird_Gym/Assets/base.png')
 		self.image2 = self.image1
 		self.rect1 = self.image1.get_rect()
 		self.rect1.x = 0
@@ -136,7 +136,7 @@ class Score:
 	def __init__(self, x, y, win):
 		self.score_list = []
 		for score in range(10):
-			img = pygame.image.load(f'Assets/Score/{score}.png')
+			img = pygame.image.load(f'./FlappyBird_Gym/Assets/Score/{score}.png')
 			self.score_list.append(img)
 			self.x = x
 			self.y = y
