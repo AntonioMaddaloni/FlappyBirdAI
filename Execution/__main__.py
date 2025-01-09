@@ -13,11 +13,11 @@ done = False
 
 while not done:
     # Usa solo `obs` per il modello
-    action = 0
+    action = 1
     print(action)
     # Esegui un passo nell'ambiente
     obs, reward, done, truncated, info = env.step(action)
-    print(obs)
+
     # Renderizza l'ambiente
     env.render()
 
