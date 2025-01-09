@@ -8,15 +8,18 @@ done = False
 #initilize
 obs = env.reset()
 #Ciclo di gioco con azioni casuali
-while not done:
+while True:
     #Seleziona un'azione casuale
-    action = random.choice([0, 1])
+    if not done:
+        action = random.choice([0, 1])
     print(action)
-    #Esegui l'azione e ottieni il nuovo stato, la ricompensa, se il gioco è finito
-    obs, reward, doned, _ = env.step(action)
-    
-    #Renderizza l'ambiente
+    # Esegui un passo nell'ambiente
+    obs, reward, done, truncated, info = env.step(action)
+    print(obs)
+    # Renderizza l'ambiente
     env.render()
 
 # Chiudi l'ambiente
 env.close()
+
+random.choice([0, 1])

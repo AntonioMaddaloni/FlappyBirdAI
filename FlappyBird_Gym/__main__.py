@@ -122,7 +122,7 @@ class FlappyBirdEnv(gym.Env):
             
             # Definizione della ricompensa
             if self.game_over:
-                reward = -10
+                reward = -500
         
             if len(self.pipe_group) > 0:
                 self.p = self.pipe_group.sprites()[0]
@@ -132,16 +132,16 @@ class FlappyBirdEnv(gym.Env):
                 if self.pipe_pass:
                     if self.grumpy.rect.left > self.p.rect.right:
                         self.pipe_pass = False
-                        self.score += 1
+                        self.score += 500
                         self.point_fx.play()
-                        reward = 1
+                        reward = 2
                         
         if not self.grumpy.alive:
             self.win.blit(self.gameover_img, (50,200))
             
         # Definizione della ricompensa
         if self.game_over:
-            reward = -10
+            reward = -500
         
         #for start game or restart game
         if action == 1:
@@ -170,11 +170,24 @@ class FlappyBirdEnv(gym.Env):
 
             # Calcola il centro del gap in termini di y
             gap_center_y = (top_pipe.rect.bottom + bottom_pipe.rect.top) / 2
+            # print(top_pipe.rect.bottom - bottom_pipe.rect.top) Distanza spazio tra le coppie di pipe
             gap_center_x = top_pipe.rect.left
         else:
             # Default se non ci sono tubi visibili
-            gap_center_x = self.grumpy.rect.centerx,
+            gap_center_x = self.grumpy.rect.centerx
             gap_center_y = self.grumpy.rect.centery
+
+        pygame.draw.line(self.win, (0, 255, 0), 
+                 (int(self.grumpy.rect.centerx), int(self.grumpy.rect.centery)),
+                 (int(gap_center_x), int(gap_center_y)), 2)  # Linea verde di spessore 2
+
+        if (self.grumpy.rect.centery - gap_center_y) > 50 and reward == 0:
+            reward = gap_center_y - self.grumpy.rect.centery
+        elif (self.grumpy.rect.centery - gap_center_y) < -50 and reward == 0:
+            reward = self.grumpy.rect.centery - gap_center_y
+        elif ((self.grumpy.rect.centery - gap_center_y) <= 50  and (self.grumpy.rect.centery - gap_center_y) >= -50) and reward == 0:
+            reward = 100
+        
         # Stato di osservazione
         obs = np.array([
             self.grumpy.rect.centerx,
@@ -228,7 +241,7 @@ class FlappyBirdEnv(gym.Env):
             self.grumpy.rect.centery,
             self.grumpy.vel, #VELOCITA CON CUI SALTA
             self.grumpy.rect.centerx,
-            self.grumpy.rect.centery,
+            self.grumpy.rect.centery
         ], dtype=np.float32)
         # Controlla se il chiamante si aspetta una tupla o solo l'osservazione
         if "stable_baselines3" in str(self.__class__):

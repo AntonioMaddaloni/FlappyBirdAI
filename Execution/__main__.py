@@ -17,10 +17,9 @@ while not done:
     print(action)
     # Esegui un passo nell'ambiente
     obs, reward, done, truncated, info = env.step(action)
-    
+    print(obs)
     # Renderizza l'ambiente
     env.render()
-    print(obs)
 
 # Chiudi l'ambiente
 env.close()
