@@ -133,9 +133,9 @@ class FlappyBirdEnv(gym.Env):
                 if self.pipe_pass:
                     if self.grumpy.rect.left > self.p.rect.right:
                         self.pipe_pass = False
-                        self.score += 500
+                        self.score += 1
                         self.point_fx.play()
-                        reward = 2
+                        reward = 500
                         
         if not self.grumpy.alive:
             self.win.blit(self.gameover_img, (50,200))
