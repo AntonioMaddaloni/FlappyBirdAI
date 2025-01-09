@@ -114,12 +114,14 @@ class FlappyBirdEnv(gym.Env):
                 if self.grumpy.alive:
                     self.hit_fx.play()
                     self.die_fx.play()
+                    self.game_over = True
                 self.grumpy.alive = False
                 self.grumpy.theta = self.grumpy.vel * -2
         
             if self.grumpy.rect.bottom >= self.display_height:
                 self.speed = 0
                 self.game_over = True
+                
             
             # Definizione della ricompensa
             if self.game_over:
@@ -157,12 +159,6 @@ class FlappyBirdEnv(gym.Env):
                 self.pipe_group.empty()
                 self.speed = 2
                 self.score = 0
-                
-            if self.game_over:
-                self.start_screen = True
-                self.grumpy = Grumpy(self.win)
-                self.pipe_img = random.choice(self.im_list)
-                self.bg = random.choice([self.bg1, self.bg2])
 
         pipes = self.pipe_group.sprites()
         if len(pipes) >= 2:
@@ -237,20 +233,43 @@ class FlappyBirdEnv(gym.Env):
         # Variables
         self.base_height = 0.80 * self.HEIGHT
         self.speed = 0
-        self.game_started = False
+        self.game_started = True
         self.game_over = False
         self.score = 0
-        self.start_screen = True
+        self.start_screen = False
         self.pipe_pass = False
         self.pipe_frequency = 1600
         distance = 0
+        #gen next pipe
+        self.last_pipe = pygame.time.get_ticks() - self.pipe_frequency
+        self.next_pipe = 0
+        self.pipe_group.empty()
+        self.speed = 2
+        self.score = 0
         # Osservazione iniziale
+
+        pipes = self.pipe_group.sprites()
+        if len(pipes) >= 2:
+            top_pipe = pipes[0]    # Primo tubo (superiore)
+            bottom_pipe = pipes[1] # Secondo tubo (inferiore)
+
+            # Calcola il centro del gap in termini di y
+            gap_center_y = (top_pipe.rect.bottom + bottom_pipe.rect.top) / 2
+            # print(top_pipe.rect.bottom - bottom_pipe.rect.top) Distanza spazio tra le coppie di pipe
+            gap_center_x = top_pipe.rect.left
+        else:
+            # Default se non ci sono tubi visibili
+            gap_center_x = self.grumpy.rect.centerx
+            gap_center_y = self.grumpy.rect.centery
+
+        distance = math.sqrt((gap_center_x - self.grumpy.rect.centerx)**2 + (gap_center_y - self.grumpy.rect.centery)**2)
+
         observation = np.array([
             self.grumpy.rect.centerx,
             self.grumpy.rect.centery,
             self.grumpy.vel, #VELOCITA CON CUI SALTA
-            self.grumpy.rect.centerx,
-            self.grumpy.rect.centery,
+            gap_center_x,
+            gap_center_y,
             distance
         ], dtype=np.float32)
         # Controlla se il chiamante si aspetta una tupla o solo l'osservazione
