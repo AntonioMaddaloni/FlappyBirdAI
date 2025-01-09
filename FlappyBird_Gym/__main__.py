@@ -192,7 +192,7 @@ class FlappyBirdEnv(gym.Env):
             elif ((self.grumpy.rect.centery - gap_center_y) <= 50  and (self.grumpy.rect.centery - gap_center_y) >= -50) and reward == 0:
                 reward = 100
         
-        distance = math.sqrt((gap_center_x - self.grumpy.rect.centerx)2 + (gap_center_y - self.grumpy.rect.centery)2)
+        distance = math.sqrt((gap_center_x - self.grumpy.rect.centerx)**2 + (gap_center_y - self.grumpy.rect.centery)**2)
 
         # Stato di osservazione
         obs = np.array([
