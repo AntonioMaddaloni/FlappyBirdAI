@@ -30,7 +30,7 @@ class Grumpy:
 		if self.alive:
 			
 			# jump
-			if action == 1 and not self.jumped:
+			if action == 1:
 				wing_fx.play()
 				self.jumped = True
 				self.vel = -6

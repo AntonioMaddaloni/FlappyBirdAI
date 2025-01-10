@@ -168,7 +168,7 @@ class FlappyBirdEnv(gym.Env):
             # Calcola il centro del gap in termini di y
             gap_center_y = (top_pipe.rect.bottom + bottom_pipe.rect.top) / 2
             # print(top_pipe.rect.bottom - bottom_pipe.rect.top) Distanza spazio tra le coppie di pipe
-            gap_center_x = top_pipe.rect.left
+            gap_center_x = top_pipe.rect.right
             pipe_exists = True
         else:
             # Default se non ci sono tubi visibili
@@ -181,11 +181,15 @@ class FlappyBirdEnv(gym.Env):
                  (int(gap_center_x), int(gap_center_y)), 2)  # Linea verde di spessore 2
         
         if pipe_exists:
-            if (self.grumpy.rect.centery - gap_center_y) > 50 and reward == 0:
-                reward = gap_center_y - self.grumpy.rect.centery
-            elif (self.grumpy.rect.centery - gap_center_y) < -50 and reward == 0:
-                reward = self.grumpy.rect.centery - gap_center_y
-            elif ((self.grumpy.rect.centery - gap_center_y) <= 50  and (self.grumpy.rect.centery - gap_center_y) >= -50) and reward == 0:
+            if (self.grumpy.rect.centery - gap_center_y) > 3 and action == 0 and reward == 0:
+                reward = -100
+            elif (self.grumpy.rect.centery - gap_center_y) > 3 and action == 1 and reward == 0:
+                reward = 1
+            elif (self.grumpy.rect.centery - gap_center_y) < -3 and action == 1 and reward == 0:
+                reward = -100
+            elif (self.grumpy.rect.centery - gap_center_y) < -3 and action == 0 and reward == 0:
+                reward = 1
+            elif ((self.grumpy.rect.centery - gap_center_y) <= 3  and (self.grumpy.rect.centery - gap_center_y) >= -3) and reward == 0:
                 reward = 100
         
         distance = math.sqrt((gap_center_x - self.grumpy.rect.centerx)**2 + (gap_center_y - self.grumpy.rect.centery)**2)
@@ -256,7 +260,7 @@ class FlappyBirdEnv(gym.Env):
             # Calcola il centro del gap in termini di y
             gap_center_y = (top_pipe.rect.bottom + bottom_pipe.rect.top) / 2
             # print(top_pipe.rect.bottom - bottom_pipe.rect.top) Distanza spazio tra le coppie di pipe
-            gap_center_x = top_pipe.rect.left
+            gap_center_x = top_pipe.rect.right
         else:
             # Default se non ci sono tubi visibili
             gap_center_x = self.grumpy.rect.centerx
