@@ -181,15 +181,15 @@ class FlappyBirdEnv(gym.Env):
                  (int(gap_center_x), int(gap_center_y)), 2)  # Linea verde di spessore 2
         
         if pipe_exists:
-            if (self.grumpy.rect.centery - gap_center_y) > 3 and action == 0 and reward == 0:
+            if (self.grumpy.rect.centery - gap_center_y) > 5 and action == 0 and reward == 0:
                 reward = -100
-            elif (self.grumpy.rect.centery - gap_center_y) > 3 and action == 1 and reward == 0:
+            elif (self.grumpy.rect.centery - gap_center_y) > 5 and action == 1 and reward == 0:
                 reward = 1
-            elif (self.grumpy.rect.centery - gap_center_y) < -3 and action == 1 and reward == 0:
+            elif (self.grumpy.rect.centery - gap_center_y) < -5 and action == 1 and reward == 0:
                 reward = -100
-            elif (self.grumpy.rect.centery - gap_center_y) < -3 and action == 0 and reward == 0:
+            elif (self.grumpy.rect.centery - gap_center_y) < -5 and action == 0 and reward == 0:
                 reward = 1
-            elif ((self.grumpy.rect.centery - gap_center_y) <= 3  and (self.grumpy.rect.centery - gap_center_y) >= -3) and reward == 0:
+            elif ((self.grumpy.rect.centery - gap_center_y) <= 5  and (self.grumpy.rect.centery - gap_center_y) >= -10) and reward == 0:
                 reward = 100
         
         distance = math.sqrt((gap_center_x - self.grumpy.rect.centerx)**2 + (gap_center_y - self.grumpy.rect.centery)**2)
