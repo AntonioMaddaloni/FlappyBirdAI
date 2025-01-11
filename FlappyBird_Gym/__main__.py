@@ -193,7 +193,6 @@ class FlappyBirdEnv(gym.Env):
         print('ACTION',action)
         print('REWARD',reward)
         print('OBS',obs)
-        print('ACTION',self.grumpy.rect.y)
         return obs, reward, done, truncated, info
 
     def render(self):
