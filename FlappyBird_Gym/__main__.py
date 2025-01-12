@@ -27,7 +27,7 @@ class FlappyBirdEnv(gym.Env):
             self.win = pygame.display.set_mode(self.SCREEN, pygame.NOFRAME | pygame.SCALED | pygame.FULLSCREEN)
 
         self.clock = pygame.time.Clock()
-        self.FPS = 60
+        self.FPS = 30
 
         # COLORS
         self.RED = (255, 0, 0)
@@ -72,8 +72,8 @@ class FlappyBirdEnv(gym.Env):
 
         # Dimensioni dell'osservazione (ad esempio, posizione, velocità, ecc.)
         self.observation_space = spaces.Box(
-             low=np.array([-self.WIDTH,-self.HEIGHT,-6,-self.WIDTH,-self.HEIGHT,-self.WIDTH]),  # Limiti inferiori
-             high=np.array([self.WIDTH,self.HEIGHT,8,self.WIDTH,self.HEIGHT,self.WIDTH]),  # Limiti superiori
+             low=np.array([0,-5,-6,0,-5,0]),  # Limiti inferiori
+             high=np.array([340,self.HEIGHT,8,340,self.HEIGHT,340]),  # Limiti superiori
             dtype=np.float32
         )      
 
@@ -123,7 +123,7 @@ class FlappyBirdEnv(gym.Env):
                         self.pipe_pass = False
                         self.score += 1
                         self.point_fx.play()
-                        reward = 10
+                        reward = 1
                         #genero la pipe nuova
                         self.y = self.display_height // 2
                         self.pipe_pos = random.choice(range(-100,100,4))
@@ -139,7 +139,7 @@ class FlappyBirdEnv(gym.Env):
             
         # Definizione della ricompensa
         if self.game_over:
-            reward = -10
+            reward = -1
 
         pipes = self.pipe_group.sprites()
         if len(pipes) == 4: #nel caso sono state generate nuove pipe e le prime non sono ancora scomparse
@@ -162,10 +162,13 @@ class FlappyBirdEnv(gym.Env):
                  (int(gap_center_x), int(gap_center_y)), 2)  # Linea verde di spessore 2
         
         if self.grumpy.rect.y <= 15 and reward == 0:
-            reward = - 5
-            reward = -1
-        elif ((self.grumpy.rect.centery - gap_center_y) <= 50  and (self.grumpy.rect.centery - gap_center_y) >= -50) and reward == 0:
-            reward = 2
+            reward = -0.5
+        elif ((self.grumpy.rect.centery - gap_center_y) < 13  and (self.grumpy.rect.centery - gap_center_y) > -13) and reward == 0:
+            reward = 0.4
+        elif ((self.grumpy.rect.centery - gap_center_y) < 25  and (self.grumpy.rect.centery - gap_center_y) > -25) and reward == 0:
+            reward = 0.3
+        elif ((self.grumpy.rect.centery - gap_center_y) < 50  and (self.grumpy.rect.centery - gap_center_y) > -50) and reward == 0:
+            reward = 0.2
         elif reward == 0:
             reward = 0.1
         
@@ -193,6 +196,7 @@ class FlappyBirdEnv(gym.Env):
         print('ACTION',action)
         print('REWARD',reward)
         print('OBS',obs)
+        self.render()
         return obs, reward, done, truncated, info
 
     def render(self):

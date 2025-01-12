@@ -8,9 +8,9 @@ print("Ambienti registrati:", gym.envs.registry.keys())
 env = gym.make('FlappyBird-v0')
 
 # Configura e addestra il modello PPO
-model = PPO("MlpPolicy", env, verbose=1)
+#model = PPO("MlpPolicy", env, verbose=1,n_steps=340)
 # Carica il modello salvato
-#model = PPO.load("./Models/ppo_flappybird", env=env)
+model = PPO.load("./Models/ppo_flappybird", env=env)
 #addestramento
 model.learn(total_timesteps=10000)
 
