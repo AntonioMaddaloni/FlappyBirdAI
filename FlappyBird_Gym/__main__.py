@@ -72,14 +72,13 @@ class FlappyBirdEnv(gym.Env):
 
         # Dimensioni dell'osservazione (ad esempio, posizione, velocità, ecc.)
         self.observation_space = spaces.Box(
-             low=np.array([0,-5,-6,0,-5,0]),  # Limiti inferiori
-             high=np.array([340,self.HEIGHT,8,340,self.HEIGHT,340]),  # Limiti superiori
+             low=np.array([0,-5,-6,0,-5,0,-1]),  # Limiti inferiori
+             high=np.array([340,self.HEIGHT,8,340,self.HEIGHT,340,1]),  # Limiti superiori
             dtype=np.float32
         )      
 
     def step(self, action):
         self.win.blit(self.bg, (0,0))
-        
         reward = 0
 
         if self.start_screen:
@@ -162,19 +161,24 @@ class FlappyBirdEnv(gym.Env):
                  (int(gap_center_x), int(gap_center_y)), 2)  # Linea verde di spessore 2
         
         if self.grumpy.rect.y <= 15 and reward == 0:
-            reward = -0.5
-        elif ((self.grumpy.rect.centery - gap_center_y) < 13  and (self.grumpy.rect.centery - gap_center_y) > -13) and reward == 0:
-            reward = 0.4
+            reward = -0.8
+        elif ((self.grumpy.rect.centery - gap_center_y) < 10  and (self.grumpy.rect.centery - gap_center_y) > -10) and reward == 0:
+            reward = 0.5
         elif ((self.grumpy.rect.centery - gap_center_y) < 25  and (self.grumpy.rect.centery - gap_center_y) > -25) and reward == 0:
+            reward = 0.4
+        elif ((self.grumpy.rect.centery - gap_center_y) < 45  and (self.grumpy.rect.centery - gap_center_y) > -45) and reward == 0:
             reward = 0.3
-        elif ((self.grumpy.rect.centery - gap_center_y) < 50  and (self.grumpy.rect.centery - gap_center_y) > -50) and reward == 0:
-            reward = 0.2
         elif reward == 0:
-            reward = 0.1
+            reward = 0.01
         
         
         distance = math.sqrt((gap_center_x - self.grumpy.rect.centerx)**2 + (gap_center_y - self.grumpy.rect.centery)**2)
 
+        if ((self.grumpy.rect.centery - gap_center_y) < 45  and (self.grumpy.rect.centery - gap_center_y) > -45):
+            position = 0
+        elif(self.grumpy.rect.centery - gap_center_y) > 45:
+            position = -1
+        else :position = 1
         # Stato di osservazione
         obs = np.array([
             self.grumpy.rect.centerx,
@@ -182,7 +186,8 @@ class FlappyBirdEnv(gym.Env):
             self.grumpy.vel, #VELOCITA CON CUI SALTA
             gap_center_x,
             gap_center_y,
-            distance
+            distance,
+            position
         ], dtype=np.float32)
         
         # Stato del gioco
@@ -262,13 +267,20 @@ class FlappyBirdEnv(gym.Env):
 
         distance = math.sqrt((gap_center_x - self.grumpy.rect.centerx)**2 + (gap_center_y - self.grumpy.rect.centery)**2)
 
+        if ((self.grumpy.rect.centery - gap_center_y) < 45  and (self.grumpy.rect.centery - gap_center_y) > -45):
+            position = 0
+        elif(self.grumpy.rect.centery - gap_center_y) > 45:
+            position = -1
+        else :position = 1
+
         observation = np.array([
             self.grumpy.rect.centerx,
             self.grumpy.rect.centery,
             self.grumpy.vel, #VELOCITA CON CUI SALTA
             gap_center_x,
             gap_center_y,
-            distance
+            distance,
+            position
         ], dtype=np.float32)
 
         

@@ -13,7 +13,7 @@ done = False
 
 while not done:
     # Usa solo `obs` per il modello
-    action, _ = 0
+    action, _ = model.predict(obs)
     # Esegui un passo nell'ambiente
     obs, reward, done, truncated, info = env.step(action)
 
