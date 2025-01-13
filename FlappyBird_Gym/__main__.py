@@ -72,8 +72,8 @@ class FlappyBirdEnv(gym.Env):
 
         # Dimensioni dell'osservazione (ad esempio, posizione, velocità, ecc.)
         self.observation_space = spaces.Box(
-             low=np.array([0,-5,-6,0,-5,0,-1]),  # Limiti inferiori
-             high=np.array([340,self.HEIGHT,8,340,self.HEIGHT,340,1]),  # Limiti superiori
+             low=np.array([69.9,11,-6,0,11,0,11,-1]),  # Limiti inferiori
+             high=np.array([77,403,8,340,403,340,403,1]),  # Limiti superiori
             dtype=np.float32
         )      
 
@@ -171,14 +171,14 @@ class FlappyBirdEnv(gym.Env):
         elif reward == 0:
             reward = 0.01
         
-        
-        distance = math.sqrt((gap_center_x - self.grumpy.rect.centerx)**2 + (gap_center_y - self.grumpy.rect.centery)**2)
-
+        position = 0
         if ((self.grumpy.rect.centery - gap_center_y) < 45  and (self.grumpy.rect.centery - gap_center_y) > -45):
             position = 0
         elif(self.grumpy.rect.centery - gap_center_y) > 45:
             position = -1
-        else :position = 1
+        else:
+            position = 1
+
         # Stato di osservazione
         obs = np.array([
             self.grumpy.rect.centerx,
@@ -186,7 +186,8 @@ class FlappyBirdEnv(gym.Env):
             self.grumpy.vel, #VELOCITA CON CUI SALTA
             gap_center_x,
             gap_center_y,
-            distance,
+            gap_center_x - self.grumpy.rect.centerx,  # Distanza orizzontale
+            gap_center_y - self.grumpy.rect.centery,   # Distanza verticale,
             position
         ], dtype=np.float32)
         
@@ -265,13 +266,13 @@ class FlappyBirdEnv(gym.Env):
             # print(top_pipe.rect.bottom - bottom_pipe.rect.top) Distanza spazio tra le coppie di pipe
             gap_center_x = top_pipe.rect.right
 
-        distance = math.sqrt((gap_center_x - self.grumpy.rect.centerx)**2 + (gap_center_y - self.grumpy.rect.centery)**2)
-
+        position = 0
         if ((self.grumpy.rect.centery - gap_center_y) < 45  and (self.grumpy.rect.centery - gap_center_y) > -45):
             position = 0
         elif(self.grumpy.rect.centery - gap_center_y) > 45:
             position = -1
-        else :position = 1
+        else:
+            position = 1
 
         observation = np.array([
             self.grumpy.rect.centerx,
@@ -279,7 +280,8 @@ class FlappyBirdEnv(gym.Env):
             self.grumpy.vel, #VELOCITA CON CUI SALTA
             gap_center_x,
             gap_center_y,
-            distance,
+            gap_center_x - self.grumpy.rect.centerx,  # Distanza orizzontale
+            gap_center_y - self.grumpy.rect.centery,   # Distanza verticale,
             position
         ], dtype=np.float32)
 
