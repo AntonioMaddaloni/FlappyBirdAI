@@ -202,7 +202,7 @@ class FlappyBirdEnv(gym.Env):
         print('ACTION',action)
         print('REWARD',reward)
         print('OBS',obs)
-        self.render()
+        #self.render()
         return obs, reward, done, truncated, info
 
     def render(self):
