@@ -7,11 +7,13 @@ import math
 from FlappyBird_Gym.objects import Grumpy, Pipe, Base, Score
 
 class FlappyBirdEnv(gym.Env):
-    def __init__(self):
+    def __init__(self,render_mode = None):
         # For Gymnasium Compatibility
         super(FlappyBirdEnv, self).__init__()
         # Spazio delle azioni: 0 = niente, 1 = flap
         self.action_space = spaces.Discrete(2)
+        #initialize render_mode
+        self.render_mode = render_mode
         # Setup del gioco
         pygame.init()
         self.SCREEN = self.WIDTH, self.HEIGHT = 288, 512
@@ -202,7 +204,8 @@ class FlappyBirdEnv(gym.Env):
         print('ACTION',action)
         print('REWARD',reward)
         print('OBS',obs)
-        #self.render()
+        if(self.render_mode == "human"):
+            self.render()
         return obs, reward, done, truncated, info
 
     def render(self):
